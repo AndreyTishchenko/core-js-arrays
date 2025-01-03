@@ -510,9 +510,21 @@ function findLongestIncreasingSubsequence(nums) {
   if (nums.length === 0) {
     return 0;
   }
-  let maxLength = 1;
-  maxLength = Math.max(...nums);
-  return maxLength;
+
+  const result = nums.reduce(
+    (acc, num, index) => {
+      if (index === 0 || num > nums[index - 1]) {
+        acc.currentLength += 1;
+        acc.maxLength = Math.max(acc.maxLength, acc.currentLength);
+      } else {
+        acc.currentLength = 1;
+      }
+      return acc;
+    },
+    { currentLength: 0, maxLength: 0 }
+  );
+
+  return result.maxLength;
 }
 
 /**
@@ -547,13 +559,9 @@ function propagateItemsByPositionIndex(arr) {
  *    shiftArray([10, 20, 30, 40, 50], -3) => [40, 50, 10, 20, 30]
  */
 function shiftArray(arr, n) {
-  const { length } = arr;
-  const shifted = Array(length);
-  for (let i = 0; i < length; i += 1) {
-    const newIndex = (i + n + length) % length;
-    shifted[newIndex] = arr[i];
-  }
-  return shifted;
+  const { length } = arr; // Object destructuring to extract 'length'
+  const shift = ((n % length) + length) % length; // Handle negative and large shifts
+  return arr.slice(-shift).concat(arr.slice(0, -shift));
 }
 
 /**
